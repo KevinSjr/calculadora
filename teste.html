@@ -1,0 +1,83 @@
+<body>
+    <div class="container">
+      <h1>Você está pronto para estudar fora?</h1>
+  
+      <div id="start-screen">
+        <p>Teste seus conhecimentos sobre bolsas internacionais!</p>
+        <button id="startBtn">Começar o Jogo</button>
+      </div>
+  
+      <div id="quiz-container" style="display: none;">
+        <div id="quiz"></div>
+        <button id="nextBtn">Próxima</button>
+        <p id="score"></p>
+      </div>
+    </div>
+     <div id="notas-container"></div>
+
+  <button onclick="adicionarNota()">Adicionar Nota</button>
+  <button onclick="converterGPA()">Converter para GPA</button>
+
+  <p id="resultado"></p>
+
+  <script>
+    let contadorNotas = 0;
+
+    function criarCampoNota() {
+      contadorNotas++;
+      const container = document.getElementById("notas-container");
+      const label = document.createElement("div");
+      label.classList.add("nota-label");
+      label.id = `nota-${contadorNotas}`;
+      label.innerHTML = `
+        Nota ${contadorNotas} (0 a 10):
+        <input type="number" class="nota" step="0.1" min="0" max="10">
+        <button onclick="removerNota('nota-${contadorNotas}')">Remover</button>
+      `;
+      container.appendChild(label);
+    }
+
+    function adicionarNota() {
+      criarCampoNota();
+    }
+
+    function removerNota(id) {
+      const campo = document.getElementById(id);
+      if (campo) campo.remove();
+    }
+
+    function converterNotaParaGPA(nota) {
+      return (nota / 10) * 4;
+    }
+
+    function converterGPA() {
+      const inputs = document.querySelectorAll(".nota");
+      let soma = 0;
+      let total = 0;
+
+      inputs.forEach(input => {
+        const valor = parseFloat(input.value);
+        if (!isNaN(valor)) {
+          soma += converterNotaParaGPA(valor);
+          total++;
+        }
+      });
+
+      const mediaGPA = total > 0 ? (soma / total).toFixed(2) : "N/A";
+      const resultado = total > 0
+        ? `Seu GPA aproximado é: ${mediaGPA}`
+        : "Por favor, insira ao menos uma nota válida.";
+
+      document.getElementById("resultado").innerText = resultado;
+    }
+
+    // Criar 12 campos iniciais ao carregar
+    window.onload = function () {
+      for (let i = 0; i < 12; i++) {
+        criarCampoNota();
+      }
+    };
+  </script>
+    <script src="script.js"></script>
+  </body>
+  

@@ -1,0 +1,30 @@
+.logo{
+    height: 15vw;
+    width: 15vw;
+}
+.navbutton1,.navbutton3,.navbutton2{
+    color: #2F6DFA;
+      font-size: clamp(10px,2vw,20px);
+    position: relative;
+    top: 5.882vw;
+}
+.title1,.title2,.title3,.title4,.title5,.title6,.title7{
+    color: #18618B;
+    font-weight: bold;
+       font-size: clamp(20px,4vw,40px);
+}
+.text1,.text2,.text3{
+    color: #18618B;
+     font-size: clamp(10px,2vw,20px);
+}
+.star{
+    position: relative;
+    left: 76.3%;
+    width: 24.265vw;
+    height: 24.265vw;
+}
+.img2{
+    width: 100%;
+    position: relative;
+    right: 2.2%;
+}
