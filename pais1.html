@@ -20,6 +20,7 @@
     }
     .caixa-azul {
       background-color: #007BFF;
+      opacity: 80%;
       color: white;
       padding: 20px;
       border-radius: 15px;
@@ -27,6 +28,23 @@
       font-family: Arial, sans-serif;
       font-size: 16px;
     }
+    img[class^="placa"] {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+}
+
+/* Efeito ao passar o mouse */
+img[class^="placa"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Efeito ao clicar */
+img[class^="placa"]:active {
+  transform: scale(0.97);
+}
+
   </style>
 </head>
 <body>
@@ -60,11 +78,11 @@
     onclick="mudarTexto('Universidades: instituições, cursos e requisitos.')" 
     style="position: relative;bottom: 55.104vh;width: 14.706vw;height: 26.042vh;right: 35.029vw;">
 
-  <img src="imagens/placa calendario.png" class="placa4" 
+  <img src="imagens/placa calendario.png" class="placa5" 
     onclick="mudarTexto('Calendário acadêmico: início das aulas, férias e eventos importantes.')" 
     style="position: relative;bottom: 50.104vh;width: 14.706vw;height: 26.042vh;left: 15.029vw;">
 
-  <img src="imagens/placa visto.png" class="placa4" 
+  <img src="imagens/placa visto.png" class="placa6" 
     onclick="mudarTexto('Vistos e documentação: tipos, exigências e prazos.')" 
     style="position: relative;bottom: 35.104vh;width: 14.706vw;height: 26.042vh;right: 70.029vw;">
 
