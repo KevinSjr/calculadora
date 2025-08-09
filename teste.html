@@ -58,6 +58,12 @@
   .nota-label button:active {
     background-color: #cc0000;
   }
+  .col-0-5{
+      width: 4.166666666666667%;
+      flex: 0 0  4.166666666666667%;
+      max-width:  4.166666666666667%;
+    }
+
 </style>
 
 </head>
@@ -65,28 +71,46 @@
     <div class="container-fluid" style="background-color: #ffffff;">
     <div class="row">
     <div class="col-3">
-    <img src="logo.png" class="logo"></div>
+    <img src="imagens/logo.png" class="logo"></div>
     <div class="col-2"><p class="navbutton1">Testes de perfil</p></div>
     <div class="col-2"><p class="navbutton2">Guia por Paises</p></div>
     <div class="col-2"><p class="navbutton3">Simuladores</p></div>
     </div>
     </div>
+
     <div class="container-fluid">
       <div class="row">
-      <div class="col-4"></div>
-      <div class="col-4">
+        <div class="col-4"></div>
+        <div class="col-4"><p class="title1">Insira suas notas do ensino medio e calcule seu GPA</p> </div>
+        <div class="col-4"><img src="imagens/image 58.png" style="width: 26.618vw;height: 29.427vh;"></div>
+      </div>
+      <div class="row">
+      <div class="col-1 col-xl-3 col-lg-3 col-sm-1 col-md-2"></div>
+      <div class="col-10 col-sm-10 col-xl-5 col-lg-5 col-md-10">
     <div class="notas-box">
   <div id="notas-container"></div>
     </div>
     </div>
     <div class="col-4"></div>
+      </div>
+        <div class="row">
     <div class="col-4-5"></div>
     <div class="col-4">
   <button onclick="adicionarNota()">Adicionar Nota</button>
   <button onclick="converterGPA()">Converter para GPA</button>
     </div>
-    <div class="col-4-5"></div>
-    <div class="col-2">  <p id="resultado"></p></div>
+    <div class="col-3"><img src="imagens/image 32.png" style="width: 25.074vw;height: 39.974vh;"></div>
+        </div>
+        <div class="row">
+    <div class="col-0-5"></div>
+    <div class="col-5"></div>
+    <div class="col-3">  <p id="resultado" style="position: relative;bottom: 180%;"></p></div>
+    <div class="col-5"></div>
+        </div>
+        <div class="row">
+    <div class="col-5"></div>
+    <div class="col-0-5"></div>
+    <div class="col-4"><button onclick="salvarGPA()" style="position: relative;bottom: 280%;">Salvar GPA</button></div>
 </div>
     </div>
 
