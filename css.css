@@ -31,3 +31,13 @@
 .container-fluid{
     margin-top: 10%;
 }
+.card-img-top{
+    width: 7.353vw;
+    height: 13.021vh;
+}
+.card{
+    width: min-content;
+    align-items: center;
+    height: min-content;
+    margin: 3%;
+}
