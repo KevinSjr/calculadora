@@ -1,118 +1,433 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Calculadora GPA - DayDreaming</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="css.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css.css">
   <style>
-    .container-fluid{
+    /* Reset e configurações básicas */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    /* Header responsivo */
+    .header-container {
+      background-color: #ffffff;
+      padding: 10px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .logo {
+      max-width: 100%;
+      height: auto;
+      width: clamp(80px, 12vw, 150px);
+    }
+    
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .navbutton1, .navbutton2, .navbutton3 {
+      color: #2F6DFA;
+      font-size: clamp(12px, 2.5vw, 18px);
+      margin: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    
+    .navbutton1:hover, .navbutton2:hover, .navbutton3:hover {
+      color: #1a4db8;
+    }
+    
+    /* Container principal */
+    .main-container {
       background-color: #2A9DF4;
       color: #ffffff;
+      min-height: 100vh;
+      padding: 20px 0;
     }
-  .col-4-5{
-      width: 37.49666666666667%;
-      flex: 0 0 37.49666666666667%;
-      max-width: 37.49666666666667%;
+    
+    /* Título responsivo */
+    .title-section {
+      text-align: center;
+      margin-bottom: 30px;
     }
-        .notas-box {
-  background-color: #1167B1;
-  
-  border-radius: 12px;
-  padding: 20px;
-  max-width: 500px;
-  margin-top: 20px;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-  .nota-label {
-    margin-bottom: 10px;
-  }
-
-  .nota-label input {
-    margin-left: 5px;
-    margin-right: 10px;
-  }
-
-  .nota-label button {
-  background-color: transparent;
-  color: red;
-  border: none;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 2px 6px;
-  transition: color 0.2s ease;
-}
-
-.nota-label button:hover {
-  color: darkred;
-}
-
-
-  .nota-label button:active {
-    background-color: #cc0000;
-  }
-  .col-0-5{
-      width: 4.166666666666667%;
-      flex: 0 0  4.166666666666667%;
-      max-width:  4.166666666666667%;
+    
+    .title1 {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: clamp(18px, 4vw, 32px);
+      margin-bottom: 20px;
+      padding: 0 15px;
     }
-
-</style>
+    
+    .hero-image {
+      max-width: 100%;
+      height: auto;
+      width: clamp(200px, 40vw, 400px);
+    }
+    
+    /* Container de notas responsivo */
+    .notas-section {
+      margin: 30px 0;
+      padding: 0 15px;
+    }
+    
+    .notas-box {
+      background-color: #1167B1;
+      border-radius: 12px;
+      padding: clamp(15px, 3vw, 30px);
+      max-width: 100%;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Grid responsivo para notas */
+    #notas-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    /* Estilo das notas */
+    .nota-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1B4F72;
+      color: #fff;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: clamp(12px, 2vw, 16px);
+      transition: transform 0.2s ease;
+    }
+    
+    .nota-label:hover {
+      transform: translateY(-2px);
+    }
+    
+    .nota-label input {
+      width: clamp(60px, 15vw, 80px);
+      padding: 5px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    .nota-label button {
+      background-color: transparent;
+      color: #ff6b6b;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 5px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .nota-label button:hover {
+      background-color: #ff6b6b;
+      color: white;
+    }
+    
+    /* Botões de ação */
+     .action-buttons {
+       text-align: center;
+       margin: 30px 0;
+       padding: 0 15px;
+     }
+     
+     .action-buttons button,
+     .btn-action {
+       background-color: #ffffff;
+       color: #2A9DF4;
+       border: none;
+       padding: clamp(10px, 2vw, 15px) clamp(20px, 4vw, 30px);
+       margin: 10px;
+       border-radius: 8px;
+       font-size: clamp(14px, 2.5vw, 18px);
+       font-weight: bold;
+       cursor: pointer;
+       transition: all 0.3s ease;
+       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+     }
+     
+     .action-buttons button:hover,
+     .btn-action:hover {
+       background-color: #f0f8ff;
+       transform: translateY(-2px);
+       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+     }
+    
+    /* Resultado */
+    .resultado-section {
+      text-align: center;
+      margin: 30px 0;
+      padding: 0 15px;
+    }
+    
+    #resultado {
+      background-color: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 8px;
+      font-size: clamp(16px, 3vw, 24px);
+      font-weight: bold;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .side-image {
+      max-width: 100%;
+      height: auto;
+      width: clamp(150px, 30vw, 300px);
+    }
+    
+    /* Media Queries para responsividade */
+     @media (max-width: 768px) {
+       .nav-buttons {
+         flex-direction: column;
+         gap: 5px;
+       }
+       
+       #notas-container {
+         grid-template-columns: 1fr;
+         gap: 10px;
+       }
+       
+       .nota-label {
+         flex-direction: column;
+         text-align: center;
+         gap: 8px;
+       }
+       
+       .action-buttons button,
+       .btn-action {
+         display: block;
+         width: 100%;
+         max-width: 300px;
+         margin: 10px auto;
+       }
+       
+       .hero-image, .side-image {
+         display: none;
+       }
+       
+       .title-section {
+         margin-bottom: 20px;
+       }
+       
+       .notas-section {
+         margin: 20px 0;
+       }
+     }
+     
+     @media (max-width: 480px) {
+       .main-container {
+         padding: 10px 0;
+       }
+       
+       .notas-box {
+         margin: 0 10px;
+         padding: 15px;
+       }
+       
+       .title1 {
+         font-size: 18px;
+         padding: 0 10px;
+       }
+       
+       .nota-label {
+         padding: 10px;
+         font-size: 12px;
+       }
+       
+       .nota-label input {
+         width: 60px;
+         font-size: 12px;
+       }
+       
+       .action-buttons,
+       .resultado-section {
+         padding: 0 10px;
+       }
+       
+       #resultado {
+         font-size: 16px;
+         padding: 15px;
+       }
+     }
+     
+     @media (max-width: 320px) {
+       .nota-label {
+         font-size: 11px;
+         padding: 8px;
+       }
+       
+       .nota-label input {
+         width: 50px;
+         font-size: 11px;
+       }
+       
+       .btn-action {
+         font-size: 14px;
+         padding: 8px 16px;
+       }
+     }
+     
+     @media (min-width: 1200px) {
+       .main-container {
+         padding: 40px 0;
+       }
+       
+       .notas-box {
+         max-width: 1000px;
+       }
+       
+       #notas-container {
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+       }
+       
+       .title1 {
+         font-size: 36px;
+       }
+     }
+     
+     /* Melhorias de acessibilidade */
+     @media (prefers-reduced-motion: reduce) {
+       * {
+         animation-duration: 0.01ms !important;
+         animation-iteration-count: 1 !important;
+         transition-duration: 0.01ms !important;
+       }
+     }
+     .header-container {
+      background-color: #03254c;
+      padding: 20px 0;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+ .navbutton {
+      color: white;
+      font-size: clamp(10px, 2vw, 20px);
+      text-align: center;
+      width: 100%;
+    }
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 10px 0;
+      }
+    }
+  </style>
 
 </head>
 <body>
-    <div class="container-fluid" style="background-color: #ffffff;">
+  <!-- Header responsivo -->
+  <div class="container-fluid header-container">
     <div class="row">
-    <div class="col-3">
-    <img src="imagens/logo.png" class="logo"></div>
-    <div class="col-2"><p class="navbutton1">Testes de perfil</p></div>
-    <div class="col-2"><p class="navbutton2">Guia por Paises</p></div>
-    <div class="col-2"><p class="navbutton3">Simuladores</p></div>
-    </div>
-    </div>
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4"><p class="title1">Insira suas notas do ensino medio e calcule seu GPA</p> </div>
-        <div class="col-4"><img src="imagens/image 58.png" style="width: 26.618vw;height: 29.427vh;"></div>
-      </div>
-      <div class="row">
-      <div class="col-1 col-xl-3 col-lg-3 col-sm-1 col-md-2"></div>
-      <div class="col-10 col-sm-10 col-xl-5 col-lg-5 col-md-10">
-    <div class="notas-box">
-  <div id="notas-container"></div>
-    </div>
-    </div>
-    <div class="col-4"></div>
-      </div>
-        <div class="row">
-    <div class="col-4-5"></div>
-    <div class="col-4">
-  <button onclick="adicionarNota()">Adicionar Nota</button>
-  <button onclick="converterGPA()">Converter para GPA</button>
-    </div>
-    <div class="col-3"><img src="imagens/image 32.png" style="width: 25.074vw;height: 39.974vh;"></div>
+        <div class="col-md-5 col-sm-3 col-2"></div>
+        <div class="col-md-2 col-sm-6 col-8 logo-container text-center">
+            <img src="Imagens/Logo_DayDreaming_trasp 1.png" alt="Logo DayDreaming">
         </div>
-        <div class="row">
-    <div class="col-0-5"></div>
-    <div class="col-5"></div>
-    <div class="col-3">  <p id="resultado" style="position: relative;bottom: 180%;"></p></div>
-    <div class="col-5"></div>
-        </div>
-        <div class="row">
-    <div class="col-5"></div>
-    <div class="col-0-5"></div>
-    <div class="col-4"><button onclick="salvarGPA()" style="position: relative;bottom: 280%;">Salvar GPA</button></div>
+        <div class="col-md-3 col-sm-1 d-none d-sm-block"></div>
+    
+    </div>
 </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-3 col-lg-3 col-sm-6 col-md-6 col-6" style="background-color: #2a9df4; min-height: 60px; border: 5px solid white; display: flex; justify-content: center; align-items: center; padding: 15px 5px;">
+            <p class="navbutton">Quem Somos</p>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-sm-6 col-md-6 col-6" style="background-color: #2a9df4; min-height: 60px; border: 5px solid white; display: flex; justify-content: center; align-items: center; padding: 15px 5px;">
+            <p class="navbutton">Teste Vocacional</p>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-sm-6 col-md-6 col-6" style="background-color: #2a9df4; min-height: 60px; border: 5px solid white; display: flex; justify-content: center; align-items: center; padding: 15px 5px;">
+            <p class="navbutton">Simulador Prático</p>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-sm-6 col-md-6 col-6" style="background-color: #2a9df4; min-height: 60px; border: 5px solid white; display: flex; justify-content: center; align-items: center; padding: 15px 5px;">
+            <p class="navbutton">Comunidade</p>
+        </div>
     </div>
+</div>
+
+  <!-- Container principal -->
+  <main class="main-container">
+    <!-- Seção do título -->
+    <section class="title-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-12 col-lg-8">
+            <h1 class="title1">Insira suas notas do ensino médio e calcule seu GPA</h1>
+          </div>
+          <div class="col-12 col-lg-4 text-center">
+            <img src="imagens/image 58.png" class="hero-image" alt="Ilustração educacional">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção das notas -->
+    <section class="notas-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xl-10">
+            <div class="notas-box">
+              <div id="notas-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Botões de ação -->
+    <section class="action-buttons">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-lg-8">
+            <button onclick="adicionarNota()" class="btn-action">Adicionar Nota</button>
+            <button onclick="converterGPA()" class="btn-action">Converter para GPA</button>
+          </div>
+          <div class="col-12 col-lg-4 text-center">
+            <img src="imagens/image 32.png" class="side-image" alt="Ilustração acadêmica">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção do resultado -->
+    <section class="resultado-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8">
+            <div id="resultado"></div>
+            <button onclick="salvarGPA()" class="btn-action" style="margin-top: 20px;">Salvar GPA</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
 
 
