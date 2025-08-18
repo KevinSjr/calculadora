@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Provas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .exam-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .exam-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4a6fa5;
+            padding-bottom: 15px;
+        }
+        
+        .exam-title {
+            color: #1a2a6c;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .question-counter {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .module-indicator {
+            background: #4a6fa5;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .question-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .alternatives-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .alternative {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alternative:hover {
+            background: #e3f2fd;
+            border-color: #4a6fa5;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alternative.selected {
+            background: #4a6fa5;
+            color: white;
+            border-color: #3a5a8c;
+        }
+        
+        .alternative-letter {
+            background: #4a6fa5;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .alternative.selected .alternative-letter {
+            background: white;
+            color: #4a6fa5;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .next-button {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .next-button:hover {
+            background: #3a5a8c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .next-button.show {
+            display: inline-block;
+        }
+        
+        .transition-container {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .transition-title {
+            color: #1a2a6c;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .transition-message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .transition-icon {
+            font-size: 4rem;
+            color: #4a6fa5;
+            margin-bottom: 20px;
+        }
+        
+        .start-module-button {
+            background: linear-gradient(135deg, #4a6fa5, #1a2a6c);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .start-module-button:hover {
+            background: linear-gradient(135deg, #3a5a8c, #0f1f4a);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.4);
+        }
+        
+        .math-transition-container {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .math-transition-title {
+            color: #1a2a6c;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .math-transition-message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .math-transition-icon {
+            font-size: 4rem;
+            color: #4a6fa5;
+            margin-bottom: 20px;
+        }
+        
+        .start-math-button {
+            background: linear-gradient(135deg, #b21f1f, #fdbb2d);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(178, 31, 31, 0.3);
+        }
+        
+        .start-math-button:hover {
+            background: linear-gradient(135deg, #a01818, #f0a515);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(178, 31, 31, 0.4);
+        }
+        
+        .results-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .results-title {
+            color: #1a2a6c;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .results-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4a6fa5;
+            margin-bottom: 20px;
+        }
+        
+        .results-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .restart-button {
+            background: #b21f1f;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-button:hover {
+            background: #a01818;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 600px) {
+            .alternatives-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .exam-title {
+                font-size: 1.5rem;
+            }
+            
+            .transition-title, .math-transition-title {
+                font-size: 1.8rem;
+            }
+            
+            .transition-message, .math-transition-message {
+                font-size: 1.1rem;
+            }
+            
+            .start-module-button, .start-math-button {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="exam-container">
+        <div class="exam-header">
+            <h1 class="exam-title">Simulador de Provas</h1>
+            <div class="question-counter">Questão <span id="current-question">1</span> de <span id="total-questions">33</span></div>
+            <div class="module-indicator" id="module-indicator">Módulo 1</div>
+        </div>
+        
+        <div id="question-section">
+            <div class="question-container">
+                <img id="question-image" src="imagens/quest1.png" alt="Questão 1" class="question-image">
+                
+                <div class="alternatives-container" id="alternatives-container">
+                    <!-- Alternativas serão inseridas aqui via JavaScript -->
+                </div>
+                
+                <div id="feedback" class="feedback"></div>
+                <button id="next-button" class="next-button">Próxima Questão</button>
+            </div>
+        </div>
+        
+        <div id="transition-section" class="transition-container">
+            <div class="transition-icon">🎉</div>
+            <h2 class="transition-title">Módulo 1 Concluído!</h2>
+            <p class="transition-message">Parabéns por completar todas as 33 questões do Módulo 1. Agora vamos começar o Módulo 2 com novas questões para continuar seu treinamento.</p>
+            <button id="start-module2-button" class="start-module-button">Iniciar Módulo 2</button>
+        </div>
+        
+        <div id="math-transition-section" class="math-transition-container">
+            <div class="math-transition-icon">🧮</div>
+            <h2 class="math-transition-title">Módulo 2 Concluído!</h2>
+            <p class="math-transition-message">Parabéns por completar todas as questões de Leitura e Escrita. Agora vamos começar o Módulo 1 de Matemática.</p>
+            <button id="start-math-button" class="start-math-button">Iniciar Módulo de Matemática</button>
+        </div>
+        
+        <div id="results-section" class="results-container">
+            <h2 class="results-title">Resultado Final</h2>
+            <div class="results-score" id="score">0/0</div>
+            <p class="results-message" id="results-message"></p>
+            <button id="restart-button" class="restart-button">Reiniciar Simulado</button>
+        </div>
+    </div>
+
+    <script>
+        // Dados das questões do Módulo 1
+        const questionsModule1 = [
+            {
+                image: "imagens/quest1.png",
+                alternatives: [
+                    { letter: "A", text: "attached" },
+                    { letter: "B", text: "collected" },
+                    { letter: "C", text: "followed" },
+                    { letter: "D", text: "replaced" }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest2.png",
+                alternatives: [
+                    { letter: "A", text: "reflect" },
+                    { letter: "B", text: "receive" },
+                    { letter: "C", text: "evaluate" },
+                    { letter: "D", text: "mimic" }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest3.png",
+                alternatives: [
+                    { letter: "A", text: " recognizable " },
+                    { letter: "B", text: "intriguing " },
+                    { letter: "C", text: "significant " },
+                    { letter: "D", text: "useful " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest4.png",
+                alternatives: [
+                    { letter: "A", text: "  substantial  " },
+                    { letter: "B", text: "satisfying " },
+                    { letter: "C", text: "unimportant  " },
+                    { letter: "D", text: "appropriate  " }
+                ],
+                correct: "C"
+            }
+            ,
+            {
+                image: "imagens/quest5.png",
+                alternatives: [
+                    { letter: "A", text: "To reveal the shop owner's conflicted feelings about the new picture  " },
+                    { letter: "B", text: "To convey the shop owner's resentment of the person he got the new picture from  " },
+                    { letter: "C", text: "To describe the items that the shop owner most highly prizes  " },
+                    { letter: "D", text: "To explain differences between the new picture and other pictures in the shop   " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest6.png",
+                alternatives: [
+                    { letter: "A", text: "The speaker assesses a natural phenomenon, then questions the accuracy of her assessment.   " },
+                    { letter: "B", text: "The speaker describes a distinctive sight in nature, then ponders what meaning to attribute to that sight. " },
+                    { letter: "C", text: "The speaker presents an outdoor scene, then considers a human behavior occurring within that scene.  " },
+                    { letter: "D", text: "The speaker examines her surroundings, then speculates about their influence on her emotional state.   " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest7.png",
+                alternatives: [
+                    { letter: "A", text: "The speaker questions an increasingly prevalent attitude, then summarizes his worldview.    " },
+                    { letter: "B", text: "The speaker regrets his isolation from others, then predicts a profound change in society.  " },
+                    { letter: "C", text: "The speaker concedes his personal shortcomings, then boasts of his many achievements.   " },
+                    { letter: "D", text: "The speaker addresses a criticism leveled against him, then announces a grand ambition of his   " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest8.png",
+                alternatives: [
+                    { letter: "A", text: "It states the hypothesis that Chang and colleagues had set out to investigate using mimosa trees and B. terrenus.     " },
+                    { letter: "B", text: "It presents a generalization that is exemplified by the discussion of the mimosa trees and B. terrenus.   " },
+                    { letter: "C", text: "It offers an alternative explanation for the findings of Chang and colleagues. " },
+                    { letter: "D", text: " It provides context that clarifies why the species mentioned spread to new locations.   " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest9.png",
+                alternatives: [
+                    { letter: "A", text: "By conceding the importance of hierarchical systems but asserting the greater significance of decentralized collective societies      " },
+                    { letter: "B", text: "By disputing the idea that developments in social structures have followed a linear progression through distinct stages    " },
+                    { letter: "C", text: "By acknowledging that hierarchical roles likely weren't a part of social systems before the rise of agriculture  " },
+                    { letter: "D", text: "By challenging the assumption that groupings of hunter-gatherers were among the earliest forms of social structure    " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest10.png",
+                alternatives: [
+                    { letter: "A", text: "Mary hides in the garden to avoid doing her chores.      " },
+                    { letter: "B", text: "Mary is getting bored with pulling up so many weeds in the garden.    " },
+                    { letter: "C", text: "Mary is clearing out the garden to create a space to play. " },
+                    { letter: "D", text: "Mary feels very satisfied when she's taking care of the garden.     " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest11.png",
+                alternatives: [
+                    { letter: "A", text: "It becomes increasingly vigorous with the passage of time.       " },
+                    { letter: "B", text: "It draws strength from changes in the weather.    " },
+                    { letter: "C", text: "It requires proper nourishment in order to thrive.  " },
+                    { letter: "D", text: "It perseveres despite challenging circumstances.     " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/quest12.png",
+                alternatives: [
+                    { letter: "A", text: "Buck has become less social since he began living with Thornton.        " },
+                    { letter: "B", text: "Buck mistrusts humans and does his best to avoid them.    " },
+                    { letter: "C", text: "Buck has been especially well liked by most of Thornton's friends.  " },
+                    { letter: "D", text: "Buck holds Thornton in higher regard than any other person.     " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest13.png",
+                alternatives: [
+                    { letter: "A", text: "Washington had between 600 and 800 organic farms.        " },
+                    { letter: "B", text: "New York had fewer than 800 organic farms.    " },
+                    { letter: "C", text: "Wisconsin and Iowa each had between 1,200 and 1,400 organic farms.   " },
+                    { letter: "D", text: " Pennsylvania had more than 1,200 organic farms.      " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest14.png",
+                alternatives: [
+                    { letter: "A", text: "The feathers located on the wings of the migratory fork-tailed flycatchers have a narrower shape than those of the nonmigratory birds, which allows them to fly long distances.      " },
+                    { letter: "B", text: "Over several generations, the sound made by the feathers of migratory male fork-tailed flycatchers grows progressively higher pitched relative to that made by the feathers of nonmigratory males.     " },
+                    { letter: "C", text: "Fork-tailed flycatchers communicate different messages to each other depending on whether their feathers create high-pitched or low-pitched sounds.    " },
+                    { letter: "D", text: "The breeding habits of the migratory and nonmigratory fork-tailed flycatchers remained generally the same over several generations.      " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest15.png",
+                alternatives: [
+                    { letter: "A", text: "iron from SPC dust is 20%.       " },
+                    { letter: "B", text: "sodium from OCC dust is 100%     " },
+                    { letter: "C", text: "iron from HTC dust is 90%.     " },
+                    { letter: "D", text: "sodium from AST dust is 75%.       " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/quest16.png",
+                alternatives: [
+                    { letter: "A", text: "The first collective I joined included many amazingly talented artists, and we enjoyed each other's company, but because we had a hard time sharing credit and responsibility for our work, the collective didn't last.       " },
+                    { letter: "B", text: "We work together, but that doesn't mean that individual projects are equally the work of all of us. Many of our projects are primarily the responsibility of whoever originally proposed the work to the group.    " },
+                    { letter: "C", text: "Having worked as a member of a collective for several years, it's sometimes hard to recall what it was like to work alone without the collective's support. But that support encourages my individual expression rather than limits it.      " },
+                    { letter: "D", text: "Sometimes an artist from outside the collective will choose to collaborate with us on a project, but all of those projects fit within the larger themes of the work the collective does on its own.      " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest17.png",
+                alternatives: [
+                    { letter: "A", text: "broccoli grown in soil containing mycorrhizal fungi had a slightly higher average mass than broccoli grown in soil that had been treated to kill fungi.       " },
+                    { letter: "B", text: "corn grown in soil containing mycorrhizal fungi had a higher average mass than broccoli grown in soil containing mycorrhizal fungi.      " },
+                    { letter: "C", text: "marigolds grown in soil containing mycorrhizal fungi had a much higher average mass than marigolds grown in soil that had been treated to kill fungi.     " },
+                    { letter: "D", text: "corn had the highest average mass of all three species grown in soil that had been treated to kill fungi, while marigolds had the lowest.        " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest18.png",
+                alternatives: [
+                    { letter: "A", text: "is not conclusive evidence that the figure is Venus.         " },
+                    { letter: "B", text: "suggests that Venus was often depicted fishing.    " },
+                    { letter: "C", text: "eliminates the possibility that the figure is Venus.     " },
+                    { letter: "D", text: "would be difficult to account for if the figure is not Venus.   " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest19.png",
+                alternatives: [
+                    { letter: "A", text: "people's stories          " },
+                    { letter: "B", text: "peoples story's     " },
+                    { letter: "C", text: "peoples stories     " },
+                    { letter: "D", text: "people's story's    " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest20.png",
+                alternatives: [
+                    { letter: "A", text: "had survived           " },
+                    { letter: "B", text: "survived      " },
+                    { letter: "C", text: "would survive      " },
+                    { letter: "D", text: "survives    " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest21.png",
+                alternatives: [
+                    { letter: "A", text: "ran—fast—during            " },
+                    { letter: "B", text: "ran—fast during       " },
+                    { letter: "C", text: "ran—fast, during       " },
+                    { letter: "D", text: "ran—fast. During     " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest22.png",
+                alternatives: [
+                    { letter: "A", text: "are            " },
+                    { letter: "B", text: "have been        " },
+                    { letter: "C", text: "were       " },
+                    { letter: "D", text: "is      " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest23.png",
+                alternatives: [
+                    { letter: "A", text: "sampler later,            " },
+                    { letter: "B", text: "sampler;        " },
+                    { letter: "C", text: "sampler,       " },
+                    { letter: "D", text: "sampler, later,    " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest24.png",
+                alternatives: [
+                    { letter: "A", text: "Julian synthesized the alkaloid physostigmine in 1935; it             " },
+                    { letter: "B", text: "in 1935 Julian synthesized the alkaloid physostigmine, which        " },
+                    { letter: "C", text: "Julian's 1935 synthesis of the alkaloid physostigmine        " },
+                    { letter: "D", text: "the alkaloid physostigmine was synthesized by Julian in 1935 and    " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/quest25.png",
+                alternatives: [
+                    { letter: "A", text: "species, both native and nonnative,             " },
+                    { letter: "B", text: "species, both native and nonnative;        " },
+                    { letter: "C", text: "species; both native and nonnative,"}, 
+                    { letter: "D", text: "species both native and nonnative,     " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/quest26.png",
+                alternatives: [
+                    { letter: "A", text: "single-handedly, however;              " },
+                    { letter: "B", text: "single-handedly; however,        " },
+                    { letter: "C", text: "single-handedly, however,"}, 
+                    { letter: "D", text: "single-handedly however      " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest27.png",
+                alternatives: [
+                    { letter: "A", text: "Instead,              " },
+                    { letter: "B", text: "Likewise,        " },
+                    { letter: "C", text: "Finally, "}, 
+                    { letter: "D", text: "Additionally,      " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/quest28.png",
+                alternatives: [
+                    { letter: "A", text: "Secondly,               " },
+                    { letter: "B", text: "Consequently,        " },
+                    { letter: "C", text: "Moreover,  "}, 
+                    { letter: "D", text: "However,     " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest29.png",
+                alternatives: [
+                    { letter: "A", text: "In addition, " },
+                    { letter: "B", text: "Actually,  " },
+                    { letter: "C", text: "However,"}, 
+                    { letter: "D", text: "Regardless," }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest30.png",
+                alternatives: [
+                    { letter: "A", text: "Therefore,  " },
+                    { letter: "B", text: "Alternately, " },
+                    { letter: "C", text: "Nevertheless,"}, 
+                    { letter: "D", text: "Likewise," }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/quest31.png",
+                alternatives: [
+                    { letter: "A", text: "To make batters rise, bakers use chemical leavening agents such as baking soda and baking powder.  " },
+                    { letter: "B", text: "Baking soda and baking powder are chemical leavening agents that, when mixed with other ingredients, cause carbon dioxide to be released within a batter.  " },
+                    { letter: "C", text: "Baking soda is pure sodium bicarbonate, and honey is a type of acidic ingredient."}, 
+                    { letter: "D", text: " To produce carbon dioxide within a liquid batter, baking soda needs to be mixed with an acidic ingredient, whereas baking powder does not." }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest32.png",
+                alternatives: [
+                    { letter: "A", text: "Park's 2013 installation Unwoven Light, which included a chain-link fence and iridescent tiles made from plexiglass, featured light as its primary medium of expression.   " },
+                    { letter: "B", text: "Korean American light artist Soo Sunny Park created Unwoven Light in 2013.  " },
+                    { letter: "C", text: "The chain-link fence in Soo Sunny Park's Unwoven Light was fitted with tiles made from iridescent plexiglass. "}, 
+                    { letter: "D", text: " In Unwoven Light, a 2013 work by Korean American artist Soo Sunny Park, light formed colorful prisms as it passed through a fence Park had fitted with iridescent tiles. " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/quest33.png",
+                alternatives: [
+                    { letter: "A", text: "Tan photographed Angkor Wat's plaster walls and then applied decorrelation stretch analysis to the photographs.    " },
+                    { letter: "B", text: "Decorrelation stretch analysis is a novel digital imaging technique that Tan used to enhance the contrast between colors in a photograph.  " },
+                    { letter: "C", text: "Using a novel digital imaging technique, Tan revealed hundreds of images hidden on the walls of Angkor Wat, a Cambodian temple. "}, 
+                    { letter: "D", text: "Built to honor a Hindu god before becoming a Buddhist temple, Cambodia's Angkor Wat concealed hundreds of images on its plaster walls.  " }
+                ],
+                correct: "C"
+            }
+        ];
+        
+        // Dados das questões do Módulo 2
+        const questionsModule2 = [
+            {
+                image: "imagens/mod2_quest1.png",
+                alternatives: [
+                    { letter: "A", text: "produced " },
+                    { letter: "B", text: "denied " },
+                    { letter: "C", text: "worried" },
+                    { letter: "D", text: "predicted" }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest2.png",
+                alternatives: [
+                    { letter: "A", text: "conceptualize" },
+                    { letter: "B", text: "neglect " },
+                    { letter: "C", text: "illustrate" },
+                    { letter: "D", text: "overcome " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest3.png",
+                alternatives: [
+                    { letter: "A", text: "selecting" },
+                    { letter: "B", text: "inspecting " },
+                    { letter: "C", text: "creating" },
+                    { letter: "D", text: "deciding" }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest4.png",
+                alternatives: [
+                    { letter: "A", text: "surpassed by" },
+                    { letter: "B", text: "comparable to " },
+                    { letter: "C", text: "independent of " },
+                    { letter: "D", text: "obtained from " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest5.png",
+                alternatives: [
+                    { letter: "A", text: "infallible" },
+                    { letter: "B", text: "atypical " },
+                    { letter: "C", text: "lucrative" },
+                    { letter: "D", text: "tedious " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest6.png",
+                alternatives: [
+                    { letter: "A", text: "validated" },
+                    { letter: "B", text: "created " },
+                    { letter: "C", text: "challenged " },
+                    { letter: "D", text: "restored" }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest7.png",
+                alternatives: [
+                    { letter: "A", text: "proponent of" },
+                    { letter: "B", text: "supplement to " },
+                    { letter: "C", text: "beneficiary of " },
+                    { letter: "D", text: "distraction for" }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest8.png",
+                alternatives: [
+                    { letter: "A", text: "reciprocate" },
+                    { letter: "B", text: "annotate" },
+                    { letter: "C", text: "buttress " },
+                    { letter: "D", text: "disengage " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest9.png",
+                alternatives: [
+                    { letter: "A", text: "It introduces a physical feature of female cuckoos that is described later in the text." },
+                    { letter: "B", text: "It describes the appearance of the cuckoo nests mentioned earlier in the text. " },
+                    { letter: "C", text: "It offers a detail about how female cuckoos carry out the behavior discussed in the text.  " },
+                    { letter: "D", text: "It explains how other birds react to the female cuckoo behavior discussed in the text " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest10.png",
+                alternatives: [
+                    { letter: "A", text: "They watched how each cat moved its ears and head. " },
+                    { letter: "B", text: "They examined how each cat reacted to the voice of a stranger. " },
+                    { letter: "C", text: "They studied how each cat physically interacted with its owner.   " },
+                    { letter: "D", text: "They tracked how each cat moved around the room. " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest11.png",
+                alternatives: [
+                    { letter: "A", text: "The choy sum planted in the soil without coffee grounds were significantly taller at the end of the experiment than the choy sum planted in the mixture of soil and coffee grounds. " },
+                    { letter: "B", text: "The choy sum grown in the soil without coffee grounds weighed significantly less at the end of the experiment than the choy sum grown in the mixture of soil and coffee grounds.  " },
+                    { letter: "C", text: "The choy sum seeds planted in the soil without coffee grounds sprouted significantly later in the experiment than did the seeds planted in the mixture of soil and coffee grounds.   " },
+                    { letter: "D", text: "Significantly fewer of the choy sum seeds planted in the soil without coffee grounds sprouted plants than did the seeds planted in the mixture of soil and coffee grounds.  " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest12.png",
+                alternatives: [
+                    { letter: "A", text: "I heard her murmur, 'I can't bear flowers on a table.' They had evidently been giving her intense pain, for she positively closed her eyes as I moved them away." },
+                    { letter: "B", text: "While we waited she took out a little, gold powder-box with a mirror in the lid, shook the poor little puff as though she loathed it, and dabbed her lovely nose." },
+                    { letter: "C", text: "I saw, after that, she couldn't stand this place a moment longer, and, indeed, she jumped up and turned away while I went through the vulgar act of paying for the tea." },
+                    { letter: "D", text: "She didn't even take her gloves off. She lowered her eyes and drummed on the table. When a faint violin sounded she winced and bit her lip again. Silence." }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest13.png",
+                alternatives: [
+                    { letter: "A", text: "aligned closely with uncertainty about tax and public spending policy in 2005 but differed from uncertainty about tax and public spending policy by a large amount in 2009." },
+                    { letter: "B", text: "was substantially lower than uncertainty about tax and public spending policy each year from 2005 to 2010." },
+                    { letter: "C", text: "reached its highest level between 2005 and 2010 in the same year that uncertainty about trade policy and tax and public spending policy reached their lowest levels." },
+                    { letter: "D", text: "was substantially lower than uncertainty about trade policy in 2005 and substantially higher than uncertainty about trade policy in 2010." }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest14.png",
+                alternatives: [
+                    { letter: "A", text: "On average, participants perceived commentators in the debate as more knowledgeable about the issue than commentators in the panel." },
+                    { letter: "B", text: "On average, participants perceived commentators in the panel as more knowledgeable about the issue than the single commentator." },
+                    { letter: "C", text: "On average, participants who watched the panel correctly answered more questions about the issue than those who watched the debate or the single commentator did." },
+                    { letter: "D", text: "On average, participants who watched the single commentator correctly answered more questions about the issue than those who watched the debate did." }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest15.png",
+                alternatives: [
+                    { letter: "A", text: "says of himself, 'I am a man / more sinned against than sinning.'" },
+                    { letter: "B", text: "says during a growing storm, 'This tempest will not give me leave to ponder / On things would hurt me more.'" },
+                    { letter: "C", text: "says to himself while striking his head, 'Beat at this gate that let thy folly in / And thy dear judgement out!'" },
+                    { letter: "D", text: "says of himself, 'I will do such things— / What they are yet, I know not; but they shall be / The terrors of the earth!'" }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest16.png",
+                alternatives: [
+                    { letter: "A", text: "many theatergoers and readers today are likely to find Shakespeare's history plays less engaging than the tragedies." },
+                    { letter: "B", text: "some of Shakespeare's tragedies are more relevant to today's audiences than twentieth-century plays." },
+                    { letter: "C", text: "Romeo and Juliet is the most thematically accessible of all Shakespeare's tragedies." },
+                    { letter: "D", text: "experts in English history tend to prefer Shakespeare's history plays to his other works" }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest17.png",
+                alternatives: [
+                    { letter: "A", text: "conditions of the terrains in the Rio Grande Valley and Mesa Verde had greater similarities in the past than they do today." },
+                    { letter: "B", text: "some Ancestral Puebloans migrated to the Rio Grande Valley in the late 1200s and carried farming practices with them." },
+                    { letter: "C", text: "Indigenous peoples living in the Rio Grande Valley primarily planted crops and did not cultivate turkeys before 1280." },
+                    { letter: "D", text: "the Ancestral Puebloans of Mesa Verde likely adopted the farming practices of Indigenous peoples living in other regions." }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest18.png",
+                alternatives: [
+                    { letter: "A", text: "struggle to find valid data about the behavior of politicians who do not currently hold office." },
+                    { letter: "B", text: "can only conduct valid studies with people who have previously held office rather than people who presently hold office." },
+                    { letter: "C", text: "should select a control group of people who differ from office holders in several significant ways." },
+                    { letter: "D", text: "will find it difficult to identify a group of people who can function as an appropriate control group for their studies." }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest19.png",
+                alternatives: [
+                    { letter: "A", text: "story's of the South Asian immigrants " },
+                    { letter: "B", text: "story's of the South Asian immigrants" },
+                    { letter: "C", text: "stories of the South Asian immigrants " },
+                    { letter: "D", text: "stories' of the South Asian immigrant's " }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest20.png",
+                alternatives: [
+                    { letter: "A", text: "of " },
+                    { letter: "B", text: "of," },
+                    { letter: "C", text: "of— " },
+                    { letter: "D", text: "of: " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest21.png",
+                alternatives: [
+                    { letter: "A", text: "company,  " },
+                    { letter: "B", text: "company that " },
+                    { letter: "C", text: "company" },
+                    { letter: "D", text: "company,that " }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest22.png",
+                alternatives: [
+                    { letter: "A", text: " carbon-13, (13C)  " },
+                    { letter: "B", text: " carbon-13 (13C)" },
+                    { letter: "C", text: " carbon-13,(13C)," },
+                    { letter: "D", text: " carbon-13 (13C), " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest23.png",
+                alternatives: [
+                    { letter: "A", text: " walls, with  " },
+                    { letter: "B", text: " walls with " },
+                    { letter: "C", text: " walls so with " },
+                    { letter: "D", text: " walls. With  " }
+                ],
+                correct: "D"
+            },
+            {
+                image: "imagens/mod2_quest24.png",
+                alternatives: [
+                    { letter: "A", text: " to forge  " },
+                    { letter: "B", text: " forging  " },
+                    { letter: "C", text: " forged " },
+                    { letter: "D", text: " and forging " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest25.png",
+                alternatives: [
+                    { letter: "A", text: "the mitigation of both street flooding and the resulting pollution of nearby waterways has been achieved by bioswales." },
+                    { letter: "B", text: " the bioswales have mitigated both street flooding and the resulting pollution of nearby waterways." },
+                    { letter: "C", text: " the bioswales' mitigation of both street flooding and the resulting pollution of nearby waterways has been achieved." },
+                    { letter: "D", text: "both street flooding and the resulting pollution of nearby waterways have been mitigated by bioswales." }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest26.png",
+                alternatives: [
+                    { letter: "A", text: "continents geological" },
+                    { letter: "B", text: "continents: geological " },
+                    { letter: "C", text: "continents; geological " },
+                    { letter: "D", text: "continents. Geological" }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/mod2_quest27.png",
+                alternatives: [
+                    { letter: "A", text: "Afterward, " },
+                    { letter: "B", text: "Additionally, " },
+                    { letter: "C", text: "Indeed," },
+                    { letter: "D", text: "Similarly, " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest28.png",
+                alternatives: [
+                    { letter: "A", text: "Alternatively, " },
+                    { letter: "B", text: "Specifically,  " },
+                    { letter: "C", text: "For example," },
+                    { letter: "D", text: "As a result,  " }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest29.png",
+                alternatives: [
+                    { letter: "A", text: "The Gregorian calendar has 365 days, which is one day longer than the Hanke-Henry permanent calendar." },
+                    { letter: "B", text: "Adopting the Hanke-Henry permanent calendar would help solve a problem with the Gregorian calendar." },
+                    { letter: "C", text: "Designed so calendar dates would occur on the same day of the week each year, the Hanke-Henry calendar supports more predictable scheduling than does the Gregorian calendar." },
+                    { letter: "D", text: "The Hanke-Henry permanent calendar was developed as an alternative to the Gregorian calendar, which is currently the most-used calendar in the world." }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest30.png",
+                alternatives: [
+                    { letter: "A", text: "Historian Bruce Johansen believes that the Great Law of Peace was very influential." },
+                    { letter: "B", text: "The influence theory is supported by the fact that Benjamin Franklin and Thomas Jefferson both studied the Haudenosaunee Confederacy." },
+                    { letter: "C", text: "The influence theory holds that the principles of the Great Law of Peace, a centuries-old agreement binding six Native nations in the northeastern US, influenced the US Constitution." },
+                    { letter: "D", text: "Native people, including the members of the Haudenosaunee Confederacy, influenced the founding of the US in many different ways." }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest31.png",
+                alternatives: [
+                    { letter: "A", text: "At around 9,800°F which classifies it as a G star, the Sun is hotter than most but not all of the stars within 10 parsecs of it." },
+                    { letter: "B", text: "Astronomer Todd Henry determined that the Sun, at around 9,800°F is a G star, and several other stars within a 10-parsec range are A or F stars." },
+                    { letter: "C", text: "Of the 357 stars within ten parsecs of the Sun, 327 are classified as K or M stars, with surface temperatures under 8,900°F." },
+                    { letter: "D", text: "While most of the stars within 10 parsecs of the Sun are classified as K, M, A, or F stars, the Sun is classified as a G star due to its surface temperature of 9,800°F." }
+                ],
+                correct: "C"
+            },
+            {
+                image: "imagens/mod2_quest32.png",
+                alternatives: [
+                    { letter: "A", text: "Cathryn Halverson's Faraway Women and the 'Atlantic Monthly' discusses female authors whose autobiographies appeared in the magazine in the early 1900s." },
+                    { letter: "B", text: "A magazine called the Atlantic Monthly, referred to in Cathryn Halverson's book title, was first published in 1857." },
+                    { letter: "C", text: "Faraway Women and the 'Atlantic Monthly' features contributors to the Atlantic Monthly, first published in 1857 as a magazine focusing on politics, art, and literature." },
+                    { letter: "D", text: "An author discussed by Cathryn Halverson is Juanita Harrison, whose autobiography appeared in the Atlantic Monthly in the early 1900s." }
+                ],
+                correct: "A"
+            },
+            {
+                image: "imagens/mod2_quest33.png",
+                alternatives: [
+                    { letter: "A", text: "A magnificent frigatebird never dives into the water, instead using its hook-tipped bill to snatch prey from the surface." },
+                    { letter: "B", text: "Neither of a magnificent frigatebird's two ways of acquiring food requires the bird to dive into the water." },
+                    { letter: "C", text: "Of the magnificent frigatebird's two ways of acquiring food, only one is known as kleptoparasitism." },
+                    { letter: "D", text: "In addition to snatching prey from the water with its hook-tipped bill, a magnificent frigatebird takes food from other birds by force." }
+                ],
+                correct: "B"
+            }
+        ];
+        
+        // Dados das questões do Módulo de Matemática (exemplo)
+        const mathQuestions = [
+            {
+                image: "imagens/math_quest1.png",
+                alternatives: [
+                    { letter: "A", text: "2" },
+                    { letter: "B", text: "4" },
+                    { letter: "C", text: "6" },
+                    { letter: "D", text: "8" }
+                ],
+                correct: "B"
+            },
+            {
+                image: "imagens/math_quest2.png",
+                alternatives: [
+                    { letter: "A", text: "10" },
+                    { letter: "B", text: "15" },
+                    { letter: "C", text: "20" },
+                    { letter: "D", text: "25" }
+                ],
+                correct: "C"
+            }
+            // Adicione mais questões de matemática aqui...
+        ];
+        
+        // Variáveis de controle
+        let currentModule = 1;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAlternative = null;
+        
+        // Elementos do DOM
+        const questionImage = document.getElementById('question-image');
+        const alternativesContainer = document.getElementById('alternatives-container');
+        const feedback = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const moduleIndicator = document.getElementById('module-indicator');
+        const questionSection = document.getElementById('question-section');
+        const transitionSection = document.getElementById('transition-section');
+        const mathTransitionSection = document.getElementById('math-transition-section');
+        const resultsSection = document.getElementById('results-section');
+        const scoreElement = document.getElementById('score');
+        const resultsMessage = document.getElementById('results-message');
+        const restartButton = document.getElementById('restart-button');
+        const startModule2Button = document.getElementById('start-module2-button');
+        const startMathButton = document.getElementById('start-math-button');
+        
+        // Inicialização
+        totalQuestionsSpan.textContent = questionsModule1.length;
+        loadQuestion();
+        
+        // Carregar questão atual
+        function loadQuestion() {
+            let questions;
+            let moduleName;
+            
+            if (currentModule === 1) {
+                questions = questionsModule1;
+                moduleName = "Módulo 1";
+            } else if (currentModule === 2) {
+                questions = questionsModule2;
+                moduleName = "Módulo 2";
+            } else {
+                questions = mathQuestions;
+                moduleName = "Matemática";
+            }
+            
+            const question = questions[currentQuestionIndex];
+            questionImage.src = question.image;
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            totalQuestionsSpan.textContent = questions.length;
+            moduleIndicator.textContent = moduleName;
+            
+            // Limpar alternativas anteriores
+            alternativesContainer.innerHTML = '';
+            feedback.className = 'feedback';
+            feedback.textContent = '';
+            nextButton.classList.remove('show');
+            selectedAlternative = null;
+            
+            // Criar novas alternativas
+            question.alternatives.forEach(alt => {
+                const alternativeElement = document.createElement('div');
+                alternativeElement.className = 'alternative';
+                alternativeElement.dataset.letter = alt.letter;
+                
+                alternativeElement.innerHTML = `
+                    <div class="alternative-letter">${alt.letter}</div>
+                    <div>${alt.text}</div>
+                `;
+                
+                alternativeElement.addEventListener('click', () => selectAlternative(alt.letter));
+                alternativesContainer.appendChild(alternativeElement);
+            });
+        }
+        
+        // Selecionar alternativa
+        function selectAlternative(letter) {
+            // Remover seleção anterior
+            document.querySelectorAll('.alternative').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Marcar alternativa selecionada
+            const selectedElement = document.querySelector(`.alternative[data-letter="${letter}"]`);
+            selectedElement.classList.add('selected');
+            selectedAlternative = letter;
+            
+            // Verificar resposta
+            let questions;
+            if (currentModule === 1) {
+                questions = questionsModule1;
+            } else if (currentModule === 2) {
+                questions = questionsModule2;
+            } else {
+                questions = mathQuestions;
+            }
+            
+            const question = questions[currentQuestionIndex];
+            const isCorrect = letter === question.correct;
+            
+            if (isCorrect) {
+                score++;
+                feedback.textContent = 'Resposta Correta!';
+                feedback.className = 'feedback correct show';
+            } else {
+                feedback.textContent = `Resposta Incorreta! A resposta correta é: ${question.correct}`;
+                feedback.className = 'feedback incorrect show';
+            }
+            
+            // Mostrar botão de próxima questão
+            nextButton.classList.add('show');
+            
+            // Avançar automaticamente após 2 segundos
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+        
+        // Próxima questão
+        function nextQuestion() {
+            let questions;
+            if (currentModule === 1) {
+                questions = questionsModule1;
+            } else if (currentModule === 2) {
+                questions = questionsModule2;
+            } else {
+                questions = mathQuestions;
+            }
+            
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                if (currentModule === 1) {
+                    // Mostrar tela de transição para o Módulo 2
+                    showTransition();
+                } else if (currentModule === 2) {
+                    // Mostrar tela de transição para o Módulo de Matemática
+                    showMathTransition();
+                } else {
+                    // Mostrar resultados finais
+                    showResults();
+                }
+            }
+        }
+        
+        // Mostrar tela de transição
+        function showTransition() {
+            questionSection.style.display = 'none';
+            transitionSection.style.display = 'block';
+        }
+        
+        // Mostrar tela de transição para matemática
+        function showMathTransition() {
+            questionSection.style.display = 'none';
+            mathTransitionSection.style.display = 'block';
+        }
+        
+        // Iniciar Módulo 2
+        startModule2Button.addEventListener('click', () => {
+            currentModule = 2;
+            currentQuestionIndex = 0;
+            transitionSection.style.display = 'none';
+            questionSection.style.display = 'block';
+            loadQuestion();
+        });
+        
+        // Iniciar Módulo de Matemática
+        startMathButton.addEventListener('click', () => {
+            currentModule = 3; // Usando 3 para representar o módulo de matemática
+            currentQuestionIndex = 0;
+            mathTransitionSection.style.display = 'none';
+            questionSection.style.display = 'block';
+            loadQuestion();
+        });
+        
+        // Mostrar resultados
+        function showResults() {
+            questionSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+            
+            const totalQuestions = questionsModule1.length + questionsModule2.length + mathQuestions.length;
+            scoreElement.textContent = `${score}/${totalQuestions}`;
+            
+            let message = '';
+            const percentage = (score / totalQuestions) * 100;
+            
+            if (percentage === 100) {
+                message = 'Parabéns! Você acertou todas as questões!';
+            } else if (percentage >= 70) {
+                message = 'Ótimo trabalho! Você foi muito bem!';
+            } else if (percentage >= 50) {
+                message = 'Bom esforço! Continue estudando!';
+            } else {
+                message = 'Não desista! Tente novamente!';
+            }
+            
+            resultsMessage.textContent = message;
+        }
+        
+        // Reiniciar simulado
+        restartButton.addEventListener('click', () => {
+            currentModule = 1;
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedAlternative = null;
+            
+            questionSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            transitionSection.style.display = 'none';
+            mathTransitionSection.style.display = 'none';
+            
+            loadQuestion();
+        });
+        
+        // Botão de próxima questão (caso o usuário queira avançar antes do tempo)
+        nextButton.addEventListener('click', () => {
+            nextQuestion();
+        });
+    </script>
+</body>
+</html>
